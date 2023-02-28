@@ -190,7 +190,7 @@ func deletePosts(c *gin.Context) {
 	//     }
 	// }
 	db.Delete(&post, id)
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "post not found"})
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "post deleted successfully"})
 }
 
 // updatePosts updates the content of a post by the ID from JSON received in the request body.
