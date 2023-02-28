@@ -25,8 +25,21 @@ fetch('/posts')
                 //     document.getElementById(post.ID).innerHTML = post.content;
                 // }
                 if (moment()) {
-                    var date_data = new Date(document.getElementById('date-'+post.ID).innerHTML);
-                    document.getElementById('date-'+post.ID).innerHTML = moment(date_data).fromNow();
+                    // var date_data = new Date(document.getElementById('date-'+post.ID).innerHTML, "");
+                    var date_data = document.getElementById('date-'+post.ID).innerHTML;
+                    // var moment_date = moment(date_data, "YYYY-MM-DDTHH:MM:SS.SSSZ")
+                    var moment_date = moment(date_data)
+                    // console.log("date_data - ");
+                    // console.log(date_data);
+                    // console.log("moment(date_data, \"YYYY-MM-DDTHH:MM:SS.SSSZ\") - ");
+                    // console.log(moment_date);
+                    // console.log(moment_date.isValid());
+                    // console.log("moment_date.fromNow() - ");
+                    // console.log(moment_date.fromNow());
+                    // console.log("-----");
+                    if (moment_date.isValid()){
+                        document.getElementById('date-'+post.ID).innerHTML = moment_date.fromNow();
+                    }
                 }
             }
         });

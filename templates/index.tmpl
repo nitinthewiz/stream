@@ -4,12 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/assets/index.css" rel="stylesheet">
-    <script async src="/assets/moment.min.js"></script>
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
-    <script async src="/assets/index.js"></script>
 </head>
 <body>
-
     <div class="grid grid-cols-4 gap-4 dark:bg-gray-800">
         <div class="col-start-2">
             <h1 class="text-3xl font-bold underline pt-10 dark:text-gray-300">
@@ -71,7 +68,7 @@
                             <div> 
                                 <div class="flex items-center justify-between text-gray-800 mt-2">
                                     <p tabindex="0" class="focus:outline-none text-sm dark:text-gray-100">{{ $post.Author }}</p>
-                                    <p id="date-{{ $post.ID }}" tabindex="0" class="focus:outline-none text-sm dark:text-gray-100">{{ $post.CreatedAt }}</p>
+                                    <p id="date-{{ $post.ID }}" tabindex="0" class="focus:outline-none text-sm dark:text-gray-100">{{ $post.CreatedDateFormat }}</p>
                                     {{if $.authorized}}
                                         <button data-id="{{ $post.ID }}" class="editButton w-8 h-8 rounded-full bg-gray-800 text-white flex items-center justify-center">
                                             <img data-id="{{ $post.ID }}" class="editButton" src="/assets/pen.svg" alt="icon"/>
@@ -93,5 +90,8 @@
                 <div><strong>no rows</strong></div>
             {{end}}
         </div>
+    </div>
+    <script src="/assets/moment.min.js"></script>
+    <script src="/assets/index.js"></script>
 </body>
 </html>

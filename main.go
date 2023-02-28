@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 	"fmt"
-	// "time"
+	"time"
 	"errors"
 	"strconv"
 	"net/http"
@@ -23,6 +23,7 @@ type Post struct {
 	Author string `json:"author"`
 	Content string `json:"content"`
 	ContentHTML string `json:"contentHTML"`
+	CreatedDateFormat string `json:"createdDateFormat"`
 }
 
 var stream_username string
@@ -282,6 +283,20 @@ func getIndexHTML(c *gin.Context) {
 	// c.JSON(http.StatusOK, gin.H{
 	//     "message": "Hello World! We are here!",
 	// })
+}
+
+func (p *Post) AfterFind(tx *gorm.DB) (err error) {
+	// fmt.Println(p.CreatedAt)
+	// fmt.Printf("p.CreatedAt = %T\n", p.CreatedAt)
+	// fmt.Println("Unix format:", p.CreatedAt.Format(time.UnixDate))
+	// fmt.Println("time.RFC3339 format:", p.CreatedAt.Format(time.RFC3339))
+	// t, err := time.Parse(time.UnixDate, p.CreatedAt.Format(time.UnixDate))
+	// fmt.Println(t)
+	t1 := time.Date(p.CreatedAt.Year(), p.CreatedAt.Month(), p.CreatedAt.Day(), p.CreatedAt.Hour(), p.CreatedAt.Minute(), p.CreatedAt.Second(), p.CreatedAt.Nanosecond(), p.CreatedAt.Location())
+	// fmt.Println(t1)
+	// p.CreatedDateFormat = p.CreatedAt.Format(time.RFC3339)
+	p.CreatedDateFormat = t1.Format(time.RFC3339)
+	return
 }
 
 
