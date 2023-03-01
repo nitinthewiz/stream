@@ -7,8 +7,10 @@
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
 </head>
 <body>
-    <div class="grid grid-cols-4 gap-4 dark:bg-gray-800">
-        <div class="col-start-2">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 dark:bg-gray-800">
+        <!-- https://gist.github.com/cvan/47455a4f8aaa22e73e54253954635dc5 -->
+        <!-- Better breakpoints -->
+        <div class="md:col-start-2">
             <h1 class="text-3xl font-bold underline pt-10 dark:text-gray-300">
                 <a href="/">
                     Welcome to the Stream!
@@ -45,7 +47,7 @@
             </div>
             <div class="prose dark:text-gray-400">This is an experimental stream of consciousness blog created by Nitin Khanna using Go. The purpose of it is mostly to learn how to work in Go.</div>
         </div>
-        <div class="postsCol col-start-3 pt-10">
+        <div class="postsCol md:col-start-3 pt-10">
             {{if .authorized}}
                 <div>
                     <textarea id="thoughts" name="thoughts" rows="3" class="textareaClass mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Any thoughts..."></textarea>
