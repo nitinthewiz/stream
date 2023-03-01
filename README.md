@@ -20,8 +20,11 @@ Yes, but. While I do support all CRUD ops, the web interface doesn't allow DELET
 - Tailwindcss and momentJS provide some much needed frontend niceness.
 
 # How do I go about using this?
-- Grab the relevant files. I'm still working on packaging this tool, but basically you need the following - 
-	- stream binary
+- Install Go v1.19.5 or above at the location where you want to run this (say, your Ubuntu VPS)
+- Grab the entire repo and build using `go build`
+- This will create the `stream` binary.
+- The most important files to run the server are - 
+	- the `stream` binary 
 	- .env_example file
 	- the assets folder 
 	- the templates folder
@@ -34,6 +37,10 @@ Yes, but. While I do support all CRUD ops, the web interface doesn't allow DELET
 	- RSS_FEED_AUTHOR_NAME=Your Name
 	- RSS_FEED_AUTHOR_EMAIL=Your Email ID
 - Now run the binary!
+- If you're using nginx to host, setup the vhost as proxy_pass
+- If you're using ufw, make sure to open up port 8080
+- ???
+- $$$
 
 # This doesn't seem very secure.
 Yes. Here be dragons. Use at your own peril. Etc etc. This is more of a fun learning project than a full blown web app.
