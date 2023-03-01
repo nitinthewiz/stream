@@ -10,15 +10,33 @@ var currentlyEditingPostID = 0;
 fetch('/posts')
     .then((response) => response.json())
         .then((data) => {
+            // console.log(data);
+            // https://catalins.tech/store-array-in-localstorage/
             localStorage.posts = JSON.stringify(data);
             inMemoryPosts = data;
             for (post of data) {
+                // console.log(post.ID);
+                // console.log(post.content);
+                // console.log(post.contentHTML);
                 if (post.contentHTML && post.contentHTML !== '') {
                     document.getElementById(post.ID).innerHTML = post.contentHTML;
                 }
+                // else {
+                //     document.getElementById(post.ID).innerHTML = post.content;
+                // }
                 if (moment()) {
+                    // var date_data = new Date(document.getElementById('date-'+post.ID).innerHTML, "");
                     var date_data = document.getElementById('date-'+post.ID).innerHTML;
+                    // var moment_date = moment(date_data, "YYYY-MM-DDTHH:MM:SS.SSSZ")
                     var moment_date = moment(date_data)
+                    // console.log("date_data - ");
+                    // console.log(date_data);
+                    // console.log("moment(date_data, \"YYYY-MM-DDTHH:MM:SS.SSSZ\") - ");
+                    // console.log(moment_date);
+                    // console.log(moment_date.isValid());
+                    // console.log("moment_date.fromNow() - ");
+                    // console.log(moment_date.fromNow());
+                    // console.log("-----");
                     if (moment_date.isValid()){
                         document.getElementById('date-'+post.ID).innerHTML = moment_date.fromNow();
                     }
@@ -30,11 +48,21 @@ fetch('/posts')
 
 document.querySelector('.submitButton')?.addEventListener('click', handleSubmit);
 document.querySelector('.toggleDarkMode')?.addEventListener('click', handleDarkModeToggle);
+// document.querySelector('.editButton')?.addEventListener('click', handleEdit);
+
+// https://carlanderson.xyz/adding-event-listeners-to-dynamic-content-with-event-delegation/
 document.querySelector('.postsCol').addEventListener('click', event => {
+    // console.log("clicked in .postsCol");
+        // Check if the clicked element was actually an .editButton
+        // if (event.target.matches('.editButton') || event.target.closest('.editButton')) {
         if (event.target.matches('.editButton')) {
-            handleEdit(event.target);
+        handleEdit(event.target);
         }
 });
+
+// document.querySelectorAll('.editButton')?.forEach(editButton => {
+//  editButton.addEventListener('click', handleEdit);
+// });
 
 async function handleSubmit() {
     var fetchEndpoint = '/posts';
@@ -69,14 +97,19 @@ async function handleSubmit() {
 
 async function handleEdit(element){
     var foundEditingPostKey = -1;
+    // console.log(element);
+    // console.log(element.dataset.id);
+    // https://developer.mozilla.org/en-US/docs/Learn/HTML/Howto/Use_data_attributes
     currentlyEditingPostID = parseInt(element.dataset.id);
     if (document.querySelector('.textareaClass').value == ''){
         document.querySelector('.textareaClass').value = '';
     }
+    // console.log(inMemoryPosts);
     if (inMemoryPosts == null || inMemoryPosts == ""){
         inMemoryPosts = JSON.parse(localStorage.posts);
     }
     for (key in inMemoryPosts) {
+        // console.log(post);
         if (inMemoryPosts[key].ID == currentlyEditingPostID){
             foundEditingPostKey = key;
             break;
@@ -86,7 +119,9 @@ async function handleEdit(element){
         alert("Could not locate the post you're trying to edit. Maybe refresh the page before trying again.");
     } else {
         post = inMemoryPosts[foundEditingPostKey];
+        // console.log(post);
         document.querySelector('.textareaClass').value = post.content;
+        // document.querySelector('.textareaClass').scrollIntoView();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
