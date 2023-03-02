@@ -26,10 +26,11 @@ type Post struct {
 	CreatedDateFormat string `json:"createdDateFormat"`
 }
 
-var stream_username string
+// var stream_username string
 var secrets gin.H
 var current_secret string
-var authorized = false
+// var current_secret_remote string
+// var authorized = false
 var db *gorm.DB
 var posts []Post
 
@@ -241,28 +242,30 @@ func updatePosts(c *gin.Context) {
 
 
 // getLogin validates the login and redirects back to index
-func getLogin(c *gin.Context) {
-	user := c.MustGet(gin.AuthUserKey).(string)
-	// c.Request.URL.Path = "/"
-	if secret, ok := secrets[user].(string); ok {
-		// c.JSON(http.StatusOK, gin.H{"user": user, "secret": secret})
-		current_secret = secret
-		authorized = true
-	} else {
-		// c.JSON(http.StatusOK, gin.H{"user": user, "secret": "NO SECRET :("})
-		current_secret = ""
-		authorized = false
-	}
-	c.Redirect(http.StatusFound, "/")
-	// r.HandleContext(c)
-}
+// func getLogin(c *gin.Context) {
+// 	user := c.MustGet(gin.AuthUserKey).(string)
+// 	// c.Request.URL.Path = "/"
+// 	if secret, ok := secrets[user].(string); ok {
+// 		// c.JSON(http.StatusOK, gin.H{"user": user, "secret": secret})
+// 		// current_secret_remote = secret
+// 		// authorized = true
+// 		c.Redirect(http.StatusFound, "/admin")
+// 	} else {
+// 		// c.JSON(http.StatusOK, gin.H{"user": user, "secret": "NO SECRET :("})
+// 		// current_secret_remote = ""
+// 		// authorized = false
+// 		c.Redirect(http.StatusFound, "/")
+// 	}
+// 	// c.Redirect(http.StatusFound, "/admin")
+// 	// r.HandleContext(c)
+// }
 
 
 // getLogout invalidates the login and redirects back to index
-func getLogout(c *gin.Context) {
-	authorized = false
-	c.Redirect(http.StatusFound, "/")
-}
+// func getLogout(c *gin.Context) {
+// 	// authorized = false
+// 	c.Redirect(http.StatusFound, "/")
+// }
 
 // getIndexHTML responds with HTML for the index page
 func getIndexHTML(c *gin.Context) {
@@ -272,19 +275,57 @@ func getIndexHTML(c *gin.Context) {
 		UnEscapeHTML: true,
 	})
 	db.Order("id desc").Find(&posts)
-	if authorized {
-		r.HTML(c.Writer, http.StatusOK, "index", gin.H{
-			"posts": posts,
-			"authorized": authorized,
-			"current_secret": current_secret,
-		})
-	} else {
-		r.HTML(c.Writer, http.StatusOK, "index", gin.H{
-			"posts": posts,
-			"authorized": authorized,
-			"current_secret": "",
-		})
-	}
+	r.HTML(c.Writer, http.StatusOK, "index", gin.H{
+		"posts": posts,
+		// "authorized": authorized,
+		// "current_secret": "",
+	})
+	// if authorized {
+	// 	r.HTML(c.Writer, http.StatusOK, "index", gin.H{
+	// 		"posts": posts,
+	// 		"authorized": authorized,
+	// 		"current_secret": current_secret,
+	// 	})
+	// } else {
+	// 	r.HTML(c.Writer, http.StatusOK, "index", gin.H{
+	// 		"posts": posts,
+	// 		"authorized": authorized,
+	// 		"current_secret": "",
+	// 	})
+	// }
+	// r.JSON(c.Writer, http.StatusOK, map[string]string{"welcome": "This is rendered JSON!"})
+	// c.JSON(http.StatusOK, gin.H{
+	//     "message": "Hello World! We are here!",
+	// })
+}
+
+
+// getAdminHTML responds with HTML for the admin page
+func getAdminHTML(c *gin.Context) {
+	r := render.New(render.Options{
+		IndentJSON: true,
+		IsDevelopment: true,
+		UnEscapeHTML: true,
+	})
+	db.Order("id desc").Find(&posts)
+	r.HTML(c.Writer, http.StatusOK, "index", gin.H{
+		"posts": posts,
+		"authorized": true,
+		"current_secret": current_secret,
+	})
+	// if current_secret_remote == current_secret_local {
+	// 	r.HTML(c.Writer, http.StatusOK, "index", gin.H{
+	// 		"posts": posts,
+	// 		"authorized": authorized,
+	// 		"current_secret": current_secret_remote,
+	// 	})
+	// } else {
+	// 	r.HTML(c.Writer, http.StatusOK, "index", gin.H{
+	// 		"posts": posts,
+	// 		"authorized": authorized,
+	// 		"current_secret": "",
+	// 	})
+	// }
 	// r.JSON(c.Writer, http.StatusOK, map[string]string{"welcome": "This is rendered JSON!"})
 	// c.JSON(http.StatusOK, gin.H{
 	//     "message": "Hello World! We are here!",
@@ -342,9 +383,20 @@ func main() {
 	authorized := router.Group("/", gin.BasicAuth(gin.Accounts{
 		os.Getenv("STREAM_USER"): os.Getenv("STREAM_PASSWORD"),
 	}))
+	// , func(c *gin.Context) {
+	// 	// c.Redirect(http.StatusFound, "/admin")
+	// 	c.String(http.StatusOK, "Welcome to admin dashboard!")
+	// })
 
-	authorized.GET("/login", getLogin)
-	authorized.GET("/logout", getLogout)
+	// authorized.GET("/login", getLogin)
+	authorized.GET("/login", func(c *gin.Context) {
+		// c.String(http.StatusOK, c.MustGet(gin.AuthUserKey).(string))
+		user := c.MustGet(gin.AuthUserKey).(string)
+		fmt.Println(user)
+		c.Redirect(http.StatusFound, "/admin")
+	})
+	// authorized.GET("/logout", getLogout)
+	authorized.GET("/admin", getAdminHTML)
 	// authorized.POST("/login", getLoginHTML)
 
 	router.Static("/assets", "./assets")
@@ -358,5 +410,6 @@ func main() {
 
 	db.Order("id desc").Find(&posts)
 
+	// router.Run("0.0.0.0:8080")
 	router.Run("localhost:8080")
 }
