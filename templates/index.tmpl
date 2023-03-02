@@ -81,16 +81,16 @@
                         </div>
                     </div>
                 </div>
-                <script type="text/javascript">
-                    {{if $.authorized}}
-                        localStorage.current_secret = {{$.current_secret}}
-                    {{else}}
-                        localStorage.current_secret = ""
-                    {{end}}
-                </script>
             {{else}}
                 <div><strong>no rows</strong></div>
             {{end}}
+            <script type="text/javascript">
+            {{if $.authorized}}
+                localStorage.current_secret = {{$.current_secret}}
+            {{else}}
+                localStorage.current_secret = ""
+            {{end}}
+            </script>
         </div>
     </div>
     <script src="/assets/moment.min.js"></script>
