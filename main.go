@@ -170,6 +170,13 @@ func getLogin(c *gin.Context) {
 }
 
 
+// getLogout invalidates the login and redirects back to index
+func getLogout(c *gin.Context) {
+	authorized = false
+	c.Redirect(http.StatusFound, "/")
+}
+
+
 // getIndexHTML responds with HTML for the index page
 func getIndexHTML(c *gin.Context) {
 	r := render.New(render.Options{
@@ -181,14 +188,14 @@ func getIndexHTML(c *gin.Context) {
 	if authorized {
 		r.HTML(c.Writer, http.StatusOK, "index", gin.H{
 			"posts": posts,
-			"authorized": true,
+			"authorized": authorized,
 			"current_secret": current_secret,
 		})
 	} else {
 		r.HTML(c.Writer, http.StatusOK, "index", gin.H{
 			"posts": posts,
-			"authorized": false,
-			"current_secret": "-",
+			"authorized": authorized,
+			"current_secret": "",
 		})
 	}
 }
@@ -235,6 +242,7 @@ func main() {
 	}))
 
 	authorized.GET("/login", getLogin)
+	authorized.GET("/logout", getLogout)
 
 	router.Static("/assets", "./assets")
 	router.GET("/", getIndexHTML)
