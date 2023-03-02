@@ -25,10 +25,8 @@ type Post struct {
 	CreatedDateFormat string `json:"createdDateFormat"`
 }
 
-var stream_username string
 var secrets gin.H
 var current_secret string
-var authorized = false
 var db *gorm.DB
 var posts []Post
 
@@ -155,28 +153,6 @@ func updatePosts(c *gin.Context) {
 	db.Model(&post).Updates(Post{Content: newPost.Content, ContentHTML: string(html)})
 }
 
-
-// getLogin validates the login and redirects back to index
-func getLogin(c *gin.Context) {
-	user := c.MustGet(gin.AuthUserKey).(string)
-	if secret, ok := secrets[user].(string); ok {
-		current_secret = secret
-		authorized = true
-	} else {
-		current_secret = ""
-		authorized = false
-	}
-	c.Redirect(http.StatusFound, "/")
-}
-
-
-// getLogout invalidates the login and redirects back to index
-func getLogout(c *gin.Context) {
-	authorized = false
-	c.Redirect(http.StatusFound, "/")
-}
-
-
 // getIndexHTML responds with HTML for the index page
 func getIndexHTML(c *gin.Context) {
 	r := render.New(render.Options{
@@ -185,19 +161,25 @@ func getIndexHTML(c *gin.Context) {
 		UnEscapeHTML: true,
 	})
 	db.Order("id desc").Find(&posts)
-	if authorized {
-		r.HTML(c.Writer, http.StatusOK, "index", gin.H{
-			"posts": posts,
-			"authorized": authorized,
-			"current_secret": current_secret,
-		})
-	} else {
-		r.HTML(c.Writer, http.StatusOK, "index", gin.H{
-			"posts": posts,
-			"authorized": authorized,
-			"current_secret": "",
-		})
-	}
+	r.HTML(c.Writer, http.StatusOK, "index", gin.H{
+		"posts": posts,
+	})
+}
+
+
+// getAdminHTML responds with HTML for the admin page
+func getAdminHTML(c *gin.Context) {
+	r := render.New(render.Options{
+		IndentJSON: true,
+		IsDevelopment: true,
+		UnEscapeHTML: true,
+	})
+	db.Order("id desc").Find(&posts)
+	r.HTML(c.Writer, http.StatusOK, "index", gin.H{
+		"posts": posts,
+		"authorized": true,
+		"current_secret": current_secret,
+	})
 }
 
 func (p *Post) AfterFind(tx *gorm.DB) (err error) {
@@ -241,8 +223,12 @@ func main() {
 		os.Getenv("STREAM_USER"): os.Getenv("STREAM_PASSWORD"),
 	}))
 
-	authorized.GET("/login", getLogin)
-	authorized.GET("/logout", getLogout)
+	authorized.GET("/login", func(c *gin.Context) {
+		user := c.MustGet(gin.AuthUserKey).(string)
+		fmt.Println(user)
+		c.Redirect(http.StatusFound, "/admin")
+	})
+	authorized.GET("/admin", getAdminHTML)
 
 	router.Static("/assets", "./assets")
 	router.GET("/", getIndexHTML)
