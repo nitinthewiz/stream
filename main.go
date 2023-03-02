@@ -260,7 +260,6 @@ func getLogin(c *gin.Context) {
 
 // getLogout invalidates the login and redirects back to index
 func getLogout(c *gin.Context) {
-	current_secret = ""
 	authorized = false
 	c.Redirect(http.StatusFound, "/")
 }
